@@ -71,4 +71,34 @@ impl Universe {
         }
         count
     }
+
+    // 자바스크립트로 내보낸 퍼블릭 메소드
+    pub fn tick(&mut self) {
+        let mut next = self.cells.clone();
+
+        for row in 0..self.height {
+            for col in 0..self.width {
+                let idx = self.get_index(row, col);
+                let cell = self.cells[idx];
+                let live_neighbors = self.live_neighbor_count(row, col);
+
+                let next_cell = match (cell, live_neighbors) {
+                    // Rule 1: 살아있는 세포 주변에 살아있는 세포가 2개 미만이라면 마치 인구 부족처럼 죽는다.
+                    (Cell::Alive, x) if x < 2 => Cell::Dead,
+                    // Rule 2: 살아있는 세포 주변에 살아있는 세포가 2~3개라면 다음 세대까지 산다.
+                    (Cell::Alive, 2) | (Cell::Alive, 3) => Cell::Alive,
+                    // Rule 3: 살아있는 세포 주변에 살아있는 세포가 3개 초과라면 마치 인구 과잉처럼 죽는다.
+                    (Cell::Alive, x) if x > 3 => Cell::Dead,
+                    // Rule 4: 죽은 세포 주변에 살아있는 세포가 3개라면 마치 번식처럼 산다.
+                    (Cell::Dead, 3) => Cell::Alive,
+                    // 이외 다른 모든 세포는 동일하게 유지된다.
+                    (otherwise, _) => otherwise,
+                };
+
+                next[idx] = next_cell;
+            }
+        }
+
+        self.cells = next;
+    }
 }
