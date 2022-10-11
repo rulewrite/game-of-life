@@ -12,12 +12,14 @@ pub enum Cell {
     Alive = 1,
 }
 
+#[wasm_bindgen]
 pub struct Universe {
     width: u32,
     height: u32,
     cells: Vec<Cell>,
 }
 
+#[wasm_bindgen]
 impl Universe {
     fn get_index(&self, row: u32, column: u32) -> usize {
         (row * self.width + column) as usize
