@@ -1,4 +1,4 @@
-import { Cell, Universe } from 'wasm-game-of-life';
+import { Universe } from 'wasm-game-of-life';
 import { memory } from 'wasm-game-of-life/game_of_life_bg'; // WebAssembly 메모리 가져오기
 
 (() => {
@@ -42,9 +42,16 @@ import { memory } from 'wasm-game-of-life/game_of_life_bg'; // WebAssembly 메�
     return row * width + column;
   };
 
+  const bitIsSet = (n, arr) => {
+    const byte = Math.floor(n / 8);
+    const mask = 1 << n % 8;
+    return (arr[byte] & mask) === mask;
+  };
+
   const drawCells = () => {
     const cellsPtr = universe.cells();
-    const cells = new Uint8Array(memory.buffer, cellsPtr, width * height);
+
+    const cells = new Uint8Array(memory.buffer, cellsPtr, (width * height) / 8);
 
     ctx.beginPath();
 
@@ -52,7 +59,7 @@ import { memory } from 'wasm-game-of-life/game_of_life_bg'; // WebAssembly 메�
       for (let col = 0; col < width; col++) {
         const idx = getIndex(row, col);
 
-        ctx.fillStyle = cells[idx] === Cell.Dead ? DEAD_COLOR : ALIVE_COLOR;
+        ctx.fillStyle = bitIsSet(idx, cells) ? ALIVE_COLOR : DEAD_COLOR;
 
         ctx.fillRect(
           col * (CELL_SIZE + 1) + 1,

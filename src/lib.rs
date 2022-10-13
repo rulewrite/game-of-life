@@ -1,20 +1,13 @@
 mod utils;
+use fixedbitset::FixedBitSet;
 use js_sys;
 use wasm_bindgen::prelude::*;
-
-#[wasm_bindgen]
-#[repr(u8)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Cell {
-    Dead = 0,
-    Alive = 1,
-}
 
 #[wasm_bindgen]
 pub struct Universe {
     width: u32,
     height: u32,
-    cells: Vec<Cell>,
+    cells: FixedBitSet,
 }
 
 #[wasm_bindgen]
@@ -27,9 +20,9 @@ impl Universe {
         self.height
     }
 
-    pub fn cells(&self) -> *const Cell {
+    pub fn cells(&self) -> *const u32 {
         // 슬라이스 버퍼에 있는 포인터 정보를 리턴한다.
-        self.cells.as_ptr()
+        self.cells.as_slice().as_ptr()
     }
 
     fn get_index(&self, row: u32, column: u32) -> usize {
@@ -97,20 +90,21 @@ impl Universe {
                 let cell = self.cells[idx];
                 let live_neighbors = self.live_neighbor_count(row, col);
 
-                let next_cell = match (cell, live_neighbors) {
-                    // Rule 1: 살아있는 세포 주변에 살아있는 세포가 2개 미만이라면 마치 인구 부족처럼 죽는다.
-                    (Cell::Alive, x) if x < 2 => Cell::Dead,
-                    // Rule 2: 살아있는 세포 주변에 살아있는 세포가 2~3개라면 다음 세대까지 산다.
-                    (Cell::Alive, 2) | (Cell::Alive, 3) => Cell::Alive,
-                    // Rule 3: 살아있는 세포 주변에 살아있는 세포가 3개 초과라면 마치 인구 과잉처럼 죽는다.
-                    (Cell::Alive, x) if x > 3 => Cell::Dead,
-                    // Rule 4: 죽은 세포 주변에 살아있는 세포가 3개라면 마치 번식처럼 산다.
-                    (Cell::Dead, 3) => Cell::Alive,
-                    // 이외 다른 모든 세포는 동일하게 유지된다.
-                    (otherwise, _) => otherwise,
-                };
-
-                next[idx] = next_cell;
+                next.set(
+                    idx,
+                    match (cell, live_neighbors) {
+                        // Rule 1: 살아있는 세포 주변에 살아있는 세포가 2개 미만이라면 마치 인구 부족처럼 죽는다.
+                        (true, x) if x < 2 => false,
+                        // Rule 2: 살아있는 세포 주변에 살아있는 세포가 2~3개라면 다음 세대까지 산다.
+                        (true, 2) | (true, 3) => true,
+                        // Rule 3: 살아있는 세포 주변에 살아있는 세포가 3개 초과라면 마치 인구 과잉처럼 죽는다.
+                        (true, x) if x > 3 => false,
+                        // Rule 4: 죽은 세포 주변에 살아있는 세포가 3개라면 마치 번식처럼 산다.
+                        (false, 3) => true,
+                        // 이외 다른 모든 세포는 동일하게 유지된다.
+                        (otherwise, _) => otherwise,
+                    },
+                );
             }
         }
 
@@ -121,15 +115,12 @@ impl Universe {
         let width = 64;
         let height = 64;
 
-        let cells = (0..width * height)
-            .map(|_| {
-                if js_sys::Math::random() < 0.5 {
-                    Cell::Alive
-                } else {
-                    Cell::Dead
-                }
-            })
-            .collect();
+        let size = (width * height) as usize;
+        let mut cells = FixedBitSet::with_capacity(size);
+
+        for i in 0..size {
+            cells.set(i, js_sys::Math::random() < 0.5);
+        }
 
         Universe {
             width,
