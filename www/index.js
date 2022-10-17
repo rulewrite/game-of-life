@@ -66,15 +66,42 @@ import { memory } from 'game-of-life/game_of_life_bg'; // WebAssembly 메모리 
     ctx.stroke();
   };
 
-  const renderLoop = () => {
-    universe.tick();
+  let animationId = null;
 
+  const renderLoop = () => {
     drawGrid();
     drawCells();
-    requestAnimationFrame(renderLoop);
+
+    universe.tick();
+
+    animationId = requestAnimationFrame(renderLoop);
   };
 
-  drawGrid();
-  drawCells();
-  requestAnimationFrame(renderLoop);
+  const isPause = () => {
+    return animationId === null;
+  };
+
+  const playPauseButton = document.getElementById('play-pause');
+
+  const play = () => {
+    playPauseButton.textContent = '⏸';
+    renderLoop();
+  };
+
+  const pause = () => {
+    playPauseButton.textContent = '▶';
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  };
+
+  playPauseButton.addEventListener('click', () => {
+    if (isPause()) {
+      play();
+      return;
+    }
+
+    pause();
+  });
+
+  play();
 })();
