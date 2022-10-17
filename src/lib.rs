@@ -2,6 +2,15 @@ mod utils;
 use js_sys;
 use wasm_bindgen::prelude::*;
 
+extern crate web_sys;
+
+// `console.log` 로깅을 위한 `println!(..)` 스타일 구문을 제공
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
+
 #[wasm_bindgen]
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -143,6 +152,8 @@ impl Universe {
                 }
             })
             .collect();
+
+        log!("create universe!");
 
         Universe {
             width,
