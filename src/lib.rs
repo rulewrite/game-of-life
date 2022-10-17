@@ -27,6 +27,16 @@ impl Universe {
         self.height
     }
 
+    pub fn set_width(&mut self, width: u32) {
+        self.width = width;
+        self.cells = (0..width * self.height).map(|_i| Cell::Dead).collect();
+    }
+
+    pub fn set_height(&mut self, height: u32) {
+        self.height = height;
+        self.cells = (0..self.width * height).map(|_i| Cell::Dead).collect();
+    }
+
     pub fn cells(&self) -> *const Cell {
         // 슬라이스 버퍼에 있는 포인터 정보를 리턴한다.
         self.cells.as_ptr()
