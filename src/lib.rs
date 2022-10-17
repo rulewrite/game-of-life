@@ -148,3 +148,19 @@ impl Universe {
         }
     }
 }
+
+// #[wasm_bindgen] 속성이 없는, js에 노출하고 싶지 않은, 테스트에만 필요한 함수들
+impl Universe {
+    // 러스트가 생성하는 WebAssembly 함수는 빌린 참조를 반환할 수 없다.
+    pub fn get_cells(&self) -> &[Cell] {
+        &self.cells
+    }
+
+    // 각 셀의 row, column을 배열로 전달하여 셀이 살아있도록 설정
+    pub fn set_cells(&mut self, cells: &[(u32, u32)]) {
+        for (row, col) in cells.iter().cloned() {
+            let idx = self.get_index(row, col);
+            self.cells[idx] = Cell::Alive;
+        }
+    }
+}
