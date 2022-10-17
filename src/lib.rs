@@ -45,16 +45,6 @@ impl Universe {
         self.height
     }
 
-    pub fn set_width(&mut self, width: u32) {
-        self.width = width;
-        self.cells = (0..width * self.height).map(|_i| Cell::Dead).collect();
-    }
-
-    pub fn set_height(&mut self, height: u32) {
-        self.height = height;
-        self.cells = (0..self.width * height).map(|_i| Cell::Dead).collect();
-    }
-
     pub fn cells(&self) -> *const Cell {
         // 슬라이스 버퍼에 있는 포인터 정보를 리턴한다.
         self.cells.as_ptr()
@@ -179,6 +169,16 @@ impl Universe {
 
 // #[wasm_bindgen] 속성이 없는, js에 노출하고 싶지 않은, 테스트에만 필요한 함수들
 impl Universe {
+    pub fn set_width(&mut self, width: u32) {
+        self.width = width;
+        self.cells = (0..width * self.height).map(|_i| Cell::Dead).collect();
+    }
+
+    pub fn set_height(&mut self, height: u32) {
+        self.height = height;
+        self.cells = (0..self.width * height).map(|_i| Cell::Dead).collect();
+    }
+
     // 러스트가 생성하는 WebAssembly 함수는 빌린 참조를 반환할 수 없다.
     pub fn get_cells(&self) -> &[Cell] {
         &self.cells
