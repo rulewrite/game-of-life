@@ -1,5 +1,5 @@
-import { Cell, Universe } from 'wasm-game-of-life';
-import { memory } from 'wasm-game-of-life/game_of_life_bg'; // WebAssembly 메모리 가져오기
+import { Cell, Universe } from 'game-of-life';
+import { memory } from 'game-of-life/game_of_life_bg'; // WebAssembly 메모리 가져오기
 
 (() => {
   const CELL_SIZE = 5; // px
