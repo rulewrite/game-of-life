@@ -93,20 +93,35 @@ const fps = new (class {
 
     ctx.beginPath();
 
-    for (let row = 0; row < height; row++) {
-      for (let col = 0; col < width; col++) {
-        const idx = getIndex(row, col);
+    [
+      {
+        color: ALIVE_COLOR,
+        cell: Cell.Alive,
+      },
+      {
+        color: DEAD_COLOR,
+        cell: Cell.Dead,
+      },
+    ].forEach(({ color, cell }) => {
+      ctx.fillStyle = color;
 
-        ctx.fillStyle = cells[idx] === Cell.Dead ? DEAD_COLOR : ALIVE_COLOR;
+      for (let row = 0; row < height; row++) {
+        for (let col = 0; col < width; col++) {
+          const idx = getIndex(row, col);
 
-        ctx.fillRect(
-          col * (CELL_SIZE + 1) + 1,
-          row * (CELL_SIZE + 1) + 1,
-          CELL_SIZE,
-          CELL_SIZE
-        );
+          if (cells[idx] !== cell) {
+            continue;
+          }
+
+          ctx.fillRect(
+            col * (CELL_SIZE + 1) + 1,
+            row * (CELL_SIZE + 1) + 1,
+            CELL_SIZE,
+            CELL_SIZE
+          );
+        }
       }
-    }
+    });
 
     ctx.stroke();
   };
