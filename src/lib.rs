@@ -51,6 +51,7 @@ pub struct Universe {
     width: u32,
     height: u32,
     cells: Vec<Cell>,
+    back_cells: Vec<Cell>,
 }
 
 #[wasm_bindgen]
@@ -126,8 +127,6 @@ impl Universe {
     pub fn tick(&mut self) {
         let _timer = Timer::new("Universe::tick");
 
-        let mut next = self.cells.clone();
-
         for row in 0..self.height {
             for col in 0..self.width {
                 let idx = self.get_index(row, col);
@@ -147,11 +146,11 @@ impl Universe {
                     (otherwise, _) => otherwise,
                 };
 
-                next[idx] = next_cell;
+                self.back_cells[idx] = next_cell;
             }
         }
 
-        self.cells = next;
+        std::mem::swap(&mut self.cells, &mut self.back_cells);
     }
 
     pub fn toggle_cell(&mut self, row: u32, column: u32) {
@@ -257,6 +256,7 @@ impl Universe {
         let height = 64;
 
         let cells = Universe::get_random_cells(width, height);
+        let back_cells = cells.clone();
 
         log!("create universe!");
 
@@ -264,6 +264,7 @@ impl Universe {
             width,
             height,
             cells,
+            back_cells,
         }
     }
 
