@@ -80,6 +80,8 @@ import { memory } from 'game-of-life/game_of_life_bg'; // WebAssembly 메모리 
 
     if (event.altKey) {
       universe.glider(row, col);
+    } else if (event.shiftKey) {
+      universe.pulsar(row, col);
     } else {
       universe.toggle_cell(row, col);
     }

@@ -170,6 +170,78 @@ impl Universe {
         });
     }
 
+    pub fn pulsar(&mut self, row: u32, column: u32) {
+        for current_row in [row - 6, row - 1, row + 1, row + 6] {
+            for idx in [
+                self.get_index(current_row, column - 4),
+                self.get_index(current_row, column - 3),
+                self.get_index(current_row, column - 2),
+                self.get_index(current_row, column + 2),
+                self.get_index(current_row, column + 3),
+                self.get_index(current_row, column + 4),
+            ] {
+                self.cells[idx] = Cell::Alive;
+            }
+
+            for idx in [
+                self.get_index(current_row, column - 6),
+                self.get_index(current_row, column - 5),
+                self.get_index(current_row, column - 1),
+                self.get_index(current_row, column),
+                self.get_index(current_row, column + 1),
+                self.get_index(current_row, column + 5),
+                self.get_index(current_row, column + 6),
+            ] {
+                self.cells[idx] = Cell::Dead;
+            }
+        }
+
+        for current_row in [row - 5, row, row + 5] {
+            for idx in [
+                self.get_index(current_row, column - 6),
+                self.get_index(current_row, column - 5),
+                self.get_index(current_row, column - 4),
+                self.get_index(current_row, column - 3),
+                self.get_index(current_row, column - 2),
+                self.get_index(current_row, column - 1),
+                self.get_index(current_row, column),
+                self.get_index(current_row, column + 1),
+                self.get_index(current_row, column + 2),
+                self.get_index(current_row, column + 3),
+                self.get_index(current_row, column + 4),
+                self.get_index(current_row, column + 5),
+                self.get_index(current_row, column + 6),
+            ] {
+                self.cells[idx] = Cell::Dead;
+            }
+        }
+
+        for current_row in [row - 4, row - 3, row - 2, row + 2, row + 3, row + 4] {
+            for idx in [
+                self.get_index(current_row, column - 6),
+                self.get_index(current_row, column - 1),
+                self.get_index(current_row, column + 1),
+                self.get_index(current_row, column + 6),
+            ] {
+                self.cells[idx] = Cell::Alive;
+            }
+
+            for idx in [
+                self.get_index(current_row, column - 5),
+                self.get_index(current_row, column - 4),
+                self.get_index(current_row, column - 3),
+                self.get_index(current_row, column - 2),
+                self.get_index(current_row, column),
+                self.get_index(current_row, column + 2),
+                self.get_index(current_row, column + 3),
+                self.get_index(current_row, column + 4),
+                self.get_index(current_row, column + 5),
+            ] {
+                self.cells[idx] = Cell::Dead;
+            }
+        }
+    }
+
     pub fn new() -> Universe {
         utils::set_panic_hook();
         // panic!("패닉 테스트");
