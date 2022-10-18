@@ -173,6 +173,10 @@ impl Universe {
     pub fn random(&mut self) {
         self.cells = Universe::get_random_cells(self.width, self.height);
     }
+
+    pub fn clear(&mut self) {
+        self.cells = vec![Cell::Dead; (self.width * self.height) as usize];
+    }
 }
 
 // #[wasm_bindgen] 속성이 없는, js에 노출하고 싶지 않은, 테스트에만 필요한 함수들
