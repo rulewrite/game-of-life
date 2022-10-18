@@ -152,6 +152,24 @@ impl Universe {
         self.cells[idx].toggle();
     }
 
+    pub fn glider(&mut self, row: u32, column: u32) {
+        vec![
+            (self.get_index(row - 1, column - 1), Cell::Dead),
+            (self.get_index(row - 1, column), Cell::Alive),
+            (self.get_index(row - 1, column + 1), Cell::Dead),
+            (self.get_index(row, column - 1), Cell::Dead),
+            (self.get_index(row, column), Cell::Dead),
+            (self.get_index(row, column + 1), Cell::Alive),
+            (self.get_index(row + 1, column - 1), Cell::Alive),
+            (self.get_index(row + 1, column), Cell::Alive),
+            (self.get_index(row + 1, column + 1), Cell::Alive),
+        ]
+        .iter()
+        .for_each(|(idx, status)| {
+            self.cells[*idx] = *status;
+        });
+    }
+
     pub fn new() -> Universe {
         utils::set_panic_hook();
         // panic!("패닉 테스트");
