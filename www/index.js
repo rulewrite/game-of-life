@@ -1,6 +1,51 @@
 import { Cell, Universe } from 'game-of-life';
 import { memory } from 'game-of-life/game_of_life_bg'; // WebAssembly 메모리 가져오기
 
+const fps = new (class {
+  constructor() {
+    this.fps = document.getElementById('fps');
+    this.frames = [];
+    this.lastFrameTimeStamp = performance.now();
+  }
+
+  render() {
+    // 마지막 프레임 렌더링 이후의 델타 시간을 초당 프레임 수(frames per second)로 변환
+    const now = performance.now();
+    const delta = now - this.lastFrameTimeStamp;
+    this.lastFrameTimeStamp = now;
+    const fps = (1 / delta) * 1000;
+
+    // 최근 100개 까지 저장
+    this.frames.push(fps);
+    if (this.frames.length > 100) {
+      this.frames.shift();
+    }
+
+    const { min, max, sum } = this.frames.reduce(
+      ({ sum, min, max }, frame) => {
+        return {
+          sum: sum + frame,
+          min: Math.min(frame, min),
+          max: Math.max(frame, max),
+        };
+      },
+      {
+        sum: 0,
+        min: Infinity,
+        max: -Infinity,
+      }
+    );
+
+    const mean = sum / this.frames.length;
+
+    this.fps.textContent = `Frames per Second:\nlatest = ${Math.round(
+      fps
+    )}\navg of last 100 = ${Math.round(mean)}\nmin of last 100 = ${Math.round(
+      min
+    )}\nmax of last 100 = ${Math.round(max)}`.trim();
+  }
+})();
+
 (() => {
   const CELL_SIZE = 5; // px
   const GRID_COLOR = '#CCCCCC';
@@ -94,6 +139,8 @@ import { memory } from 'game-of-life/game_of_life_bg'; // WebAssembly 메모리 
   let tickPerFrame = 1;
 
   const renderLoop = () => {
+    fps.render();
+
     drawGrid();
     drawCells();
 
