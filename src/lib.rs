@@ -1,13 +1,31 @@
 mod utils;
 use js_sys;
 use wasm_bindgen::prelude::*;
+use web_sys::console;
 
 extern crate web_sys;
 
 // `console.log` 로깅을 위한 `println!(..)` 스타일 구문을 제공
 macro_rules! log {
     ( $( $t:tt )* ) => {
-        web_sys::console::log_1(&format!( $( $t )* ).into());
+        console::log_1(&format!( $( $t )* ).into());
+    }
+}
+
+pub struct Timer<'a> {
+    name: &'a str,
+}
+
+impl<'a> Timer<'a> {
+    pub fn new(name: &'a str) -> Timer<'a> {
+        console::time_with_label(name);
+        Timer { name }
+    }
+}
+
+impl<'a> Drop for Timer<'a> {
+    fn drop(&mut self) {
+        console::time_end_with_label(self.name);
     }
 }
 
@@ -119,6 +137,8 @@ impl Universe {
 
     // 자바스크립트로 내보낸 퍼블릭 메소드
     pub fn tick(&mut self) {
+        let _timer = Timer::new("Universe::tick");
+
         let mut next = self.cells.clone();
 
         for row in 0..self.height {
