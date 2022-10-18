@@ -37,6 +37,18 @@ pub struct Universe {
 
 #[wasm_bindgen]
 impl Universe {
+    fn get_random_cells(width: u32, height: u32) -> Vec<Cell> {
+        (0..width * height)
+            .map(|_| {
+                if js_sys::Math::random() < 0.5 {
+                    Cell::Alive
+                } else {
+                    Cell::Dead
+                }
+            })
+            .collect()
+    }
+
     pub fn width(&self) -> u32 {
         self.width
     }
@@ -147,15 +159,7 @@ impl Universe {
         let width = 64;
         let height = 64;
 
-        let cells = (0..width * height)
-            .map(|_| {
-                if js_sys::Math::random() < 0.5 {
-                    Cell::Alive
-                } else {
-                    Cell::Dead
-                }
-            })
-            .collect();
+        let cells = Universe::get_random_cells(width, height);
 
         log!("create universe!");
 
@@ -164,6 +168,10 @@ impl Universe {
             height,
             cells,
         }
+    }
+
+    pub fn random(&mut self) {
+        self.cells = Universe::get_random_cells(self.width, self.height);
     }
 }
 

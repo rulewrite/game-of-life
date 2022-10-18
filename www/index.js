@@ -134,4 +134,8 @@ import { memory } from 'game-of-life/game_of_life_bg'; // WebAssembly 메모리 
   });
 
   play();
+
+  document.getElementById('random').addEventListener('click', () => {
+    universe.random();
+  });
 })();
