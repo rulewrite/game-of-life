@@ -1,5 +1,5 @@
 [package]
-name = "game-of-life"
+name = "game-of-life-rulewrite"
 version = "0.1.0"
 authors = ["rulewrite <rulewrite@gmail.com>"]
 edition = "2018"
